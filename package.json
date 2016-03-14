@@ -1,0 +1,24 @@
+{
+  "name": "node.js_sample_project",
+  "version": "0.0.0",
+  "description": "node.jsで遊んでみる",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    //"test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/macoril/node.js-sample-project.git"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "macoril",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/macoril/node.js-sample-project/issues"
+  },
+  "homepage": "https://github.com/macoril/node.js-sample-project#readme"
+}

@@ -9,7 +9,8 @@
   "devDependencies": {},
   "scripts": {
     "_comment": "echo \"Error: no test specified\" && exit 1",
-    "test": ""
+    "start": "node fortune.js",
+    "test": "echo 'nothing is specified'"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
   "keywords": [
     "node.js"
   ],
-  "author": "macoril",
+  "author": "macoril <macoriloid@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/macoril/node.js-sample-project/issues"

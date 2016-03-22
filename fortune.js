@@ -73,6 +73,9 @@ function escapeHtmlSpecialChar(html) {
   }
 };
 
+//var server = http.createServer(onRequest);
+
+//function onRequest(req, res) {
 http.createServer(function (req, res) {
   if (req.url !== '/') {
     res.writeHead(404, {'Content-type': 'text/plain'});
@@ -98,6 +101,50 @@ http.createServer(function (req, res) {
     res.write(htmlFooter);
     res.end();
     return ;
+  }
+
+  function sendResponse() {
+    var query = querystring.parse(req.data);
+
+    // compute a MD5 hash from a concatenation of the posted data.
+    var seed = query.name + query.year + query.month + query.day + query.sex;
+    var hash = crypto.createHash('md5');
+    hash.update(seed);
+    var hashValue = hash.digest('hex');
+
+    var fortuneKey = Number('0x' + hashValue.slice(0,2));
+
+    var result = '';
+    if (fortuneKey < 10) {
+      result = '大凶';
+    } else if (fortuneKey < 50) {
+      result = '凶';
+    } else if (fortuneKey < 100) {
+      result = '末吉';
+    } else if (fortuneKey < 150) {
+      result = '吉';
+    } else if (fortuneKey < 245) {
+      result = '中吉';
+    } else {
+      result = '大吉';
+    }
+
+    var resultStr = '<div><p>'
+      + escapeHtmlSpecialChar(query.year) + '年'
+      + escapeHtmlSpecialChar(query.month) + '月'
+      + escapeHtmlSpecialChar(query.day) + '日生まれの'
+      + escapeHtmlSpecialChar(query.name) + 'さん（'
+      + ((query.sex == 'male') ? '男性' : '女性')
+      + '）の運勢は…'
+      + '<span class="result">'
+      + result + '</span>です。</p></div>'
+      + '<a href="/">トップに戻る</a>';
+
+    res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
+    res.write(htmlHeader);
+    res.write(resultStr);
+    res.write(htmlFooter);
+    res.end();
   }
 }).listen(PORT);
 

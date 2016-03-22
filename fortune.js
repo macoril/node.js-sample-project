@@ -60,7 +60,6 @@ var htmlMainForm = (function() {/*
 
 var htmlFooter = '</div></body></html>';
 
-//TODO 恐らくサニタイズ用のモジュールがあるので、それに置き換える
 // 「<」や「>」、「&」といった文字列をエンティティに変換する
 function escapeHtmlSpecialChar(html) {
   if (html === undefined) {

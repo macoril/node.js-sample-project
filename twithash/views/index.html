@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>twithash</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script><!--
+      var socket = new io.Socket();
+      socket.connect();
+      socket.on('message', function(t) {
+          $('<div></div>').text(t).prependTo('#tweets');
+      });
+    //--></script>
+  </head>
+  <body>
+    <div id="tweets"></div>
+  </body>
+</html>

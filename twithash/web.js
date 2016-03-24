@@ -21,7 +21,7 @@ var twitter = new TwitterNode({
 });
 
 twitter
-  .addListerner('tweet', function(tweet) {
+  .addListener('tweet', function(tweet) {
     socket.broadcast(tweet.text);
   })
   .stream();

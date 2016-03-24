@@ -1,14 +1,16 @@
 const sys = require('util'),
       express = require('express'),
-      app = express.createServer(),
+      app = express(),
+      http = require('http'),
+      server = http.createServer(app),
       io = require('socket.io'),
       TwitterNode = require('twitter-node').TwitterNode;
 
 // express
-app.configure(function() {
+//app.configure(function() {
   app.use(express.static(__dirname + '/views'));
-});
-app.listen(8888);
+//});
+server.listen(8888);
 
 //socket.io
 const socket = io.listen(app);

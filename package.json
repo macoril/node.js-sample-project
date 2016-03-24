@@ -4,7 +4,7 @@
   "description": "node.jsで遊んでみる",
   "main": "index.js",
   "dependencies": {
-    "express": "^2.5.10",
+    "express": "^4.13.4",
     "socket.io": "^1.4.5",
     "twitter-node": "0.0.2",
     "validator": "^5.1.0"

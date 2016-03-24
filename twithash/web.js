@@ -1,4 +1,4 @@
-const sys = require('sys'),
+const sys = require('util'),
       express = require('express'),
       app = express.createServer(),
       io = require('socket.io'),

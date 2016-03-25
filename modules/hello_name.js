@@ -1,6 +1,6 @@
-setName = function(name) {
+exports.setName = function(name) {
   this.name = name;
 }
-hello = function() {
+exports.hello = function() {
   console.log('Hello,', this.name);
 }

@@ -10,14 +10,17 @@ process.stdin.setEncoding('utf8');
     input: process.stdin,
     output: process.stdout
   }).on('line', function(line) {
+    console.log('line: '+line);
     lines.push(line);
+  }).on('close', function() {
+    console.log('closed!')
+    console.log('lines: '+lines); // 全て
+    lines.forEach(function(line, i) {
+      console.log('line '+i+': '+line); // 一行ずつ
+    });
   });
 
 
   process.stdin.on('end', function() {
-    console.log(lines); // 全て
-    lines.forEach(function(line) {
-      console.log(line); // 一行ずつ
-    });
   });
 })();

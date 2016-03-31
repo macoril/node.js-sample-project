@@ -16,7 +16,7 @@ http.createServer(function (req, res) {
       }
       res.writeHead(200, header);
       res.write(file, "binary");
-      res.end;
+      res.end();
     }
     , "404": function() {
       var header = {
@@ -24,7 +24,7 @@ http.createServer(function (req, res) {
       }
       res.writeHead(404, header);
       res.write("404 Not Found\n");
-      res.end;
+      res.end();
     }
     , "500": function(err) {
       var header = {
@@ -32,7 +32,7 @@ http.createServer(function (req, res) {
       }
       res.writeHead(500, header);
       res.write(err + "\n");
-      res.end;
+      res.end();
     }
   }
 

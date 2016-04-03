@@ -9,12 +9,12 @@ var fs = require("fs");
 http.createServer(function (req, res) {
   var Response = {
     "200": function(file, filename) {
-      var extname = path.extname(filename);
       var header = {
         "Pragma": "no-cache"
       , "Cache-Control": "no-cache"
       }
       res.writeHead(200, header);
+      res.write(filename + '\n');
       res.write(file, "binary");
       res.end();
     }
@@ -46,16 +46,33 @@ http.createServer(function (req, res) {
       return;
     }
     if (fs.statSync(filename).isDirectory()) {
-      filename += '/index.html';
+      if (fs.exists(filename + '/index.html', function(exists) {
+        if (exists) {
+          filename += '/index.html';
+    console.log('1' + filename);
+        } else {
+        }
+      }));
     }
 
-    fs.readFile(filename, "binary", function(err, file) {
-      if (err) {
-        Response["500"](err);
+    console.log('2' + filename);
+    if (fs.statSync(filename).isDirectory()) {
+      console.log('dir');
+      //TODO ディレクトリを指定された＆indexhtmlがない場合
+      fs.readdir('.', function(err,files) {
+        if (err) throw err;
+        Response["200"](files.join('\n').toString(), filename);
         return;
-      }
-      Response["200"](file, filename);
-    });
+      });
+    } else {
+      fs.readFile(filename, "binary", function(err, file) {
+        if (err) {
+          Response["500"](err);
+          return;
+        }
+        Response["200"](file, filename);
+      });
+    }
   });
 }).listen(PORT);
 

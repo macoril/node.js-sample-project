@@ -46,25 +46,29 @@ http.createServer(function (req, res) {
       return;
     }
     if (fs.statSync(filename).isDirectory()) {
-      if (fs.exists(filename + '/index.html', function(exists) {
+      fs.exists(filename + '/index.html', function(exists) {
         if (exists) {
           filename += '/index.html';
-    console.log('1' + filename);
+          //XXX duplicated
+          console.log('1' + filename);
+          fs.readFile(filename, "binary", function(err, file) {
+            if (err) {
+              Response["500"](err);
+              return;
+            }
+            Response["200"](file, filename);
+          });
         } else {
+          fs.readdir('.', function(err,files) {
+            if (err) throw err;
+            Response["200"](files.join('\n').toString(), filename);
+            return;
+          });
         }
-      }));
-    }
-
-    console.log('2' + filename);
-    if (fs.statSync(filename).isDirectory()) {
-      console.log('dir');
-      //TODO ディレクトリを指定された＆indexhtmlがない場合
-      fs.readdir('.', function(err,files) {
-        if (err) throw err;
-        Response["200"](files.join('\n').toString(), filename);
-        return;
       });
     } else {
+      //XXX duplicated
+      console.log('2' + filename);
       fs.readFile(filename, "binary", function(err, file) {
         if (err) {
           Response["500"](err);

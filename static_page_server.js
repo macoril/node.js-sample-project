@@ -13,6 +13,7 @@ http.createServer(function (req, res) {
         "Pragma": "no-cache"
       , "Cache-Control": "no-cache"
       }
+      console.log(200);
       res.writeHead(200, header);
       res.write(filename + '\n');
       res.write(file, "binary");
@@ -22,6 +23,7 @@ http.createServer(function (req, res) {
       var header = {
         "Content-Type": "text/plain"
       }
+      console.log(404);
       res.writeHead(404, header);
       res.write("404 Not Found\n");
       res.end();
@@ -31,6 +33,7 @@ http.createServer(function (req, res) {
       var header = {
         "Content-Type": "text/plain"
       }
+      console.log(500);
       res.writeHead(500, header);
       res.write(err + "\n");
       res.end();
@@ -40,14 +43,22 @@ http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   var filename = path.join(process.cwd(), uri);
 
-  function f (filename) {
-    fs.readFile(filename, "binary", function(err, file) {
-      if (err) {
-        Response["500"](err);
-        return;
-      }
-      Response["200"](file, filename);
-    });
+  //function f (filename, is_dir = false) {
+  var f = function (filename, is_dir) {
+    if (is_dir) {
+      fs.readdir(filename, function(err, files) {
+        Response["200"](files.join('\n').toString(), filename);
+      });
+    } else {
+      fs.readFile(filename, "binary", function(err, file) {
+        if (err) {
+          Response["500"](err);
+        } else {
+          Response["200"](file, filename);
+        }
+      });
+    }
+    return;
   }
 
   fs.stat(filename, function(err, stats) {
@@ -60,26 +71,27 @@ http.createServer(function (req, res) {
 
     console.log(stats);
 
-    if (stats.isDirectory()) {
-      fs.stat(filename + '/index.html', function(err, stats) {
-        if (!err) {
-          filename += '/index.html';
-          //XXX duplicated
-          console.log('1' + filename);
-          f (filename);
-        } else {
-          fs.readdir('.', function(err,files) {
-            if (err) throw err;
-            Response["200"](files.join('\n').toString(), filename);
-            return;
-          });
-        }
-      });
-    } else {
-      //XXX duplicated
+    var is_dir = false;
+    return new Promise(function(resolve, reject) {
+      if (stats.isDirectory()) {
+        is_dir = true;
+        fs.stat(filename + '/index.html', function(err, stats) {
+          if (!err) {
+            is_dir = false;
+            filename += '/index.html';
+            console.log('1' + filename);
+          }
+        });
+      }
+      resolve();
+    }).then(function () {
       console.log('2' + filename);
-      f (filename);
-    }
+      f (filename, is_dir);
+    });
+    //} else {
+    //XXX duplicated
+    //console.log('2' + filename);
+    //f (filename);
 
   });
 }).listen(PORT);

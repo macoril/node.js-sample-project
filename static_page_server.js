@@ -27,6 +27,7 @@ http.createServer(function (req, res) {
       res.end();
     }
     , "500": function(err) {
+      console.log(err);
       var header = {
         "Content-Type": "text/plain"
       }
@@ -39,25 +40,33 @@ http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   var filename = path.join(process.cwd(), uri);
 
-  fs.exists(filename, function(exists) {
-    console.log(filename + " " + exists);
-    if (!exists) {
+  function f (filename) {
+    fs.readFile(filename, "binary", function(err, file) {
+      if (err) {
+        Response["500"](err);
+        return;
+      }
+      Response["200"](file, filename);
+    });
+  }
+
+  fs.stat(filename, function(err, stats) {
+    console.log("path: " + filename);
+    console.log("e: " + err);
+    if (err) {
       Response["404"]();
       return;
     }
-    if (fs.statSync(filename).isDirectory()) {
-      fs.exists(filename + '/index.html', function(exists) {
-        if (exists) {
+
+    console.log(stats);
+
+    if (stats.isDirectory()) {
+      fs.stat(filename + '/index.html', function(err, stats) {
+        if (!err) {
           filename += '/index.html';
           //XXX duplicated
           console.log('1' + filename);
-          fs.readFile(filename, "binary", function(err, file) {
-            if (err) {
-              Response["500"](err);
-              return;
-            }
-            Response["200"](file, filename);
-          });
+          f (filename);
         } else {
           fs.readdir('.', function(err,files) {
             if (err) throw err;
@@ -69,15 +78,11 @@ http.createServer(function (req, res) {
     } else {
       //XXX duplicated
       console.log('2' + filename);
-      fs.readFile(filename, "binary", function(err, file) {
-        if (err) {
-          Response["500"](err);
-          return;
-        }
-        Response["200"](file, filename);
-      });
+      f (filename);
     }
+
   });
 }).listen(PORT);
+
 
 console.log('Server running at http://' + HOSTNAME + ':' + PORT + '/');

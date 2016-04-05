@@ -29,3 +29,5 @@ new Promise(function(resolve, reject) {
   console.log('3');
   f1 ();
 });
+
+console.log('7');

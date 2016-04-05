@@ -10,7 +10,7 @@ const co = require("co");
 http.createServer((req, res) => {
   const Response = {
     "200": (content) => {
-      let header = {
+      var header = {
         "Pragma": "no-cache"
       , "Cache-Control": "no-cache"
       }
@@ -21,7 +21,7 @@ http.createServer((req, res) => {
       res.end();
     }
     , "404": () => {
-      let header = {
+      var header = {
         "Content-Type": "text/plain"
       }
       console.log(404);
@@ -31,7 +31,7 @@ http.createServer((req, res) => {
     }
     , "500": (err) => {
       console.log(err);
-      let header = {
+      var header = {
         "Content-Type": "text/plain"
       }
       console.log(500);

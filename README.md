@@ -6,6 +6,11 @@
 * helloworld2.js: requestListenerを登録せずcreateServerしてあとから登録する方法
 * helloworld3.js: Content-Typeをtext/plainにした場合のwrite(の挙動の違い（1と比較）)
 
+### 直列処理の実装のテスト
+
+* without_promise.js: before 何も気にせず実行したい順に記述しただけ
+* with_promise.js: after 想定通りに実行されるように、Promiseやcoを使って直列にした
+
 ### 写経
 
 * fortune.js: おみくじ

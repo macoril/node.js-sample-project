@@ -1,4 +1,5 @@
 var fs = require("fs");
+var co = require('co');
 
 var f1 = function () {
   console.log('4');
@@ -13,24 +14,23 @@ var f1 = function () {
   return;
 }
 
-Promise.resolve()
-  .then (function() {
-    return new Promise(function(resolve, reject) {
-      fs.stat('helloworld1.js', function(err, stats) {
-        console.log('1');
-        resolve();
-      });
+co (function *() {
+  yield new Promise(function(resolve, reject) {
+    fs.stat('helloworld1.js', function(err, stats) {
+      console.log('1');
+      resolve();
     });
-  }).then (function() {
-    return new Promise(function(resolve, reject) {
-      fs.stat('helloworld2.js', function(err, stats) {
-        console.log('2');
-        resolve();
-      });
-    });
-  }).then (function() {
-    console.log('3');
-    f1 ();
   });
+
+  yield new Promise(function(resolve, reject) {
+    fs.stat('helloworld2.js', function(err, stats) {
+      console.log('2');
+      resolve();
+    });
+  });
+
+  console.log('3');
+  f1 ();
+});
 
 console.log('7');

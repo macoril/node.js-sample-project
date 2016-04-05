@@ -4,6 +4,7 @@
   "description": "node.jsで遊んでみる",
   "main": "index.js",
   "dependencies": {
+    "co": "^4.6.0",
     "validator": "^5.1.0"
   },
   "devDependencies": {},

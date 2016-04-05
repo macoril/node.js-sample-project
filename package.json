@@ -7,9 +7,12 @@
     "co": "^4.6.0",
     "validator": "^5.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.6.5"
+  },
   "scripts": {
     "_comment": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d lib",
     "start": "node fortune.js",
     "test": "echo 'nothing is specified'"
   },

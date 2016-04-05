@@ -21,6 +21,22 @@
     ファイルでもディレクトリでもないものが指定された - 404
 * statics/: 表示のテストに使った
 
+### Babelのテスト
+
+* src/: 変換前のソース置き場 ES2015の記述を試したソース色々
+* lib/: babelを直接叩いた場合の結果出力ディレクトリ
+* dist/: gulp経由でbabelした結果出力ディレクトリ
+
+#### 実行方法
+##### babel直接
+* node_modules/.bin/babel before_path -d output_dir
+* npm run build
+    package.jsonのscriptsに設定した
+##### gulp経由
+* node_modules/.bin/gulp
+* node_modules/.bin/gulp watch
+    指定のファイルの変更を監視して、変更があれば自動でbabel
+
 ### 写経
 
 * fortune.js: おみくじ

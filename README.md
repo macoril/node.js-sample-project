@@ -11,6 +11,16 @@
 * without_promise.js: before 何も気にせず実行したい順に記述しただけ
 * with_promise.js: after 想定通りに実行されるように、Promiseやcoを使って直列にした
 
+### 静的ページを表示する
+
+* static_page_server.js:
+    ファイルが指定された - その内容を表示
+    ディレクトリが指定された
+        index.htmlがある - その内容を表示
+        index.htmlがない - ディレクトリ内のファイル一覧を表示
+    ファイルでもディレクトリでもないものが指定された - 404
+* statics/: 表示のテストに使った
+
 ### 写経
 
 * fortune.js: おみくじ

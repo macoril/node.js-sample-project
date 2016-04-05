@@ -5,6 +5,7 @@ var http = require("http");
 var url = require("url");
 var path = require("path");
 var fs = require("fs");
+var co = require("co");
 
 http.createServer(function (req, res) {
   var Response = {
@@ -43,46 +44,61 @@ http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   var filename = path.join(process.cwd(), uri);
 
-  var f = function(filename) {
-    var status_code = 200;
-    var content = '';
+  var f = function(filename, is_dir) {
+    var is_dir = (is_dir === undefined) ? false : is_dir;
 
-    return new Promise(function(resolve, reject) {
-      fs.readFile(filename, "binary", function(err, file) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(file);
-        }
-      });
-    })
-    .then(
-      function onResolved(file) {
-        content = file;
-      }
-      , function onRejected(err) {
-        return new Promise(function(resolve, reject) {
+    co (function *() {
+      var status_code = '';
+      var content = '';
+
+      yield new Promise(function(resolve, reject) {
+        // ディレクトリの場合
+        if (is_dir) {
           fs.readdir(filename, function(err, files) {
             if (!err) {
               content = filename + '\n\n';
-              content += files.join('\n').toString()
+              content += files.join('\n').toString();
+              resolve();
             } else {
-              content = err;
-              status_code = 500;
+              reject(err);
             }
-            resolve();
           });
-        });
-      })
-    .then(function () {
+
+        // ファイルの場合
+        } else {
+          fs.readFile(filename, "binary", function(err, file) {
+            if (!err) {
+              content = file;
+              resolve();
+            } else {
+              reject(err);
+            }
+          });
+        }
+
+      }).then(
+        function onResolved() {
+          console.log('onRes');
+          status_code = 200;
+        }
+        , function onRejected(err) {
+          console.log('onRej');
+          content = err;
+          status_code = 500;
+        }
+      );
+
+      console.log('response!');
       Response[status_code](content);
-      resolve();
     });
+
+    return ;
   }
 
   fs.stat(filename, function(err, stats) {
     console.log("path: " + filename);
     console.log("e: " + err);
+    // ファイルもディレクトリもない
     if (err) {
       Response["404"]();
       return;
@@ -90,25 +106,23 @@ http.createServer(function (req, res) {
 
     console.log(stats);
 
-    var is_dir = false;
-    return new Promise(function(resolve, reject) {
-      if (stats.isDirectory()) {
-        is_dir = true;
+    if (stats.isFile()) {
+      f (filename);
+    } else if (stats.isDirectory()) {
+      new Promise(function(resolve, reject) {
         fs.stat(filename + '/index.html', function(err, stats) {
+          var is_dir = true;
           if (!err) {
             is_dir = false;
             filename += '/index.html';
             console.log('1' + filename);
           }
-          resolve();
+          resolve(is_dir);
         });
-      } else {
-        resolve();
-      }
-    }).then(function () {
-      console.log('2' + filename);
-      f (filename);
-    });
+      }).then(function (is_dir) {
+        f (filename, is_dir);
+      });
+    }
   });
 
 }).listen(PORT);

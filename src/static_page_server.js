@@ -7,9 +7,9 @@ const path = require("path");
 const fs = require("fs");
 const co = require("co");
 
-http.createServer(function (req, res) {
+http.createServer((req, res) => {
   const Response = {
-    "200": function(content) {
+    "200": (content) => {
       let header = {
         "Pragma": "no-cache"
       , "Cache-Control": "no-cache"
@@ -20,7 +20,7 @@ http.createServer(function (req, res) {
       res.write(content, "binary");
       res.end();
     }
-    , "404": function() {
+    , "404": () => {
       let header = {
         "Content-Type": "text/plain"
       }
@@ -29,7 +29,7 @@ http.createServer(function (req, res) {
       res.write("404 Not Found\n");
       res.end();
     }
-    , "500": function(err) {
+    , "500": (err) => {
       console.log(err);
       let header = {
         "Content-Type": "text/plain"
@@ -44,17 +44,17 @@ http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   var filename = path.join(process.cwd(), uri);
 
-  var f = function(filename, is_dir) {
+  var f = (filename, is_dir) => {
     var is_dir = (is_dir === undefined) ? false : is_dir;
 
     co (function *() {
       var status_code = '';
       var content = '';
 
-      yield new Promise(function(resolve, reject) {
+      yield new Promise((resolve, reject) => {
         // ディレクトリの場合
         if (is_dir) {
-          fs.readdir(filename, function(err, files) {
+          fs.readdir(filename, (err, files) => {
             if (!err) {
               content = filename + '\n\n';
               content += files.join('\n').toString();
@@ -66,7 +66,7 @@ http.createServer(function (req, res) {
 
         // ファイルの場合
         } else {
-          fs.readFile(filename, "binary", function(err, file) {
+          fs.readFile(filename, "binary", (err, file) => {
             if (!err) {
               content = file;
               resolve();
@@ -95,7 +95,7 @@ http.createServer(function (req, res) {
     return ;
   }
 
-  fs.stat(filename, function(err, stats) {
+  fs.stat(filename, (err, stats) => {
     console.log("path: " + filename);
     console.log("e: " + err);
     // ファイルもディレクトリもない
@@ -109,8 +109,8 @@ http.createServer(function (req, res) {
     if (stats.isFile()) {
       f (filename);
     } else if (stats.isDirectory()) {
-      new Promise(function(resolve, reject) {
-        fs.stat(filename + '/index.html', function(err, stats) {
+      new Promise((resolve, reject) => {
+        fs.stat(filename + '/index.html', (err, stats) => {
           var is_dir = true;
           if (!err) {
             is_dir = false;
@@ -119,9 +119,7 @@ http.createServer(function (req, res) {
           }
           resolve(is_dir);
         });
-      }).then(function (is_dir) {
-        f (filename, is_dir);
-      });
+      }).then(is_dir => f (filename, is_dir) );
     }
   });
 

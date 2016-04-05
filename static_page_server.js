@@ -8,15 +8,15 @@ var fs = require("fs");
 
 http.createServer(function (req, res) {
   var Response = {
-    "200": function(file, filename) {
+    "200": function(content) {
       var header = {
         "Pragma": "no-cache"
       , "Cache-Control": "no-cache"
       }
       console.log(200);
+      console.log(content);
       res.writeHead(200, header);
-      res.write(filename + '\n');
-      res.write(file, "binary");
+      res.write(content, "binary");
       res.end();
     }
     , "404": function() {
@@ -43,22 +43,41 @@ http.createServer(function (req, res) {
   var uri = url.parse(req.url).pathname;
   var filename = path.join(process.cwd(), uri);
 
-  //function f (filename, is_dir = false) {
-  var f = function (filename, is_dir) {
-    if (is_dir) {
-      fs.readdir(filename, function(err, files) {
-        Response["200"](files.join('\n').toString(), filename);
-      });
-    } else {
+  var f = function(filename) {
+    var status_code = 200;
+    var content = '';
+
+    return new Promise(function(resolve, reject) {
       fs.readFile(filename, "binary", function(err, file) {
         if (err) {
-          Response["500"](err);
+          reject(err);
         } else {
-          Response["200"](file, filename);
+          resolve(file);
         }
       });
-    }
-    return;
+    })
+    .then(
+      function onResolved(file) {
+        content = file;
+      }
+      , function onRejected(err) {
+        return new Promise(function(resolve, reject) {
+          fs.readdir(filename, function(err, files) {
+            if (!err) {
+              content = filename + '\n\n';
+              content += files.join('\n').toString()
+            } else {
+              content = err;
+              status_code = 500;
+            }
+            resolve();
+          });
+        });
+      })
+    .then(function () {
+      Response[status_code](content);
+      resolve();
+    });
   }
 
   fs.stat(filename, function(err, stats) {
@@ -81,19 +100,17 @@ http.createServer(function (req, res) {
             filename += '/index.html';
             console.log('1' + filename);
           }
+          resolve();
         });
+      } else {
+        resolve();
       }
-      resolve();
     }).then(function () {
       console.log('2' + filename);
-      f (filename, is_dir);
+      f (filename);
     });
-    //} else {
-    //XXX duplicated
-    //console.log('2' + filename);
-    //f (filename);
-
   });
+
 }).listen(PORT);
 
 

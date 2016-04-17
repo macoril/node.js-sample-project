@@ -32,6 +32,7 @@
 * node_modules/.bin/babel before_path -d output_dir
 * npm run build
     package.jsonのscriptsに設定した
+
 ##### gulp経由
 * node_modules/.bin/gulp
 * node_modules/.bin/gulp watch
